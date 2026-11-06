@@ -180,7 +180,7 @@
     if (imBtn) imBtn.addEventListener('click', importData);
     window.addEventListener('hashchange', route);
     route();
-    /* 云端同步（方案 B）：启动后与 Aiven MySQL 拉取/对齐，并开启轮询 */
+    /* 云端同步（方案 B）：启动后与 Aiven PostgreSQL 拉取/对齐，并开启轮询 */
     if (global.Sync) Sync.start(function () { try { Admin.reload(); } catch (e) { } });
     /* 语言切换后重渲染当前页（图表标签 / 数值格式同步更新） */
     if (global.I18n) {

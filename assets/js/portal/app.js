@@ -49,7 +49,7 @@
     setInterval(clock, 30000);
     window.addEventListener('hashchange', route);
     route();
-    /* 云端同步（方案 B）：启动后与 Aiven MySQL 拉取/对齐，并开启轮询 */
+    /* 云端同步（方案 B）：启动后与 Aiven PostgreSQL 拉取/对齐，并开启轮询 */
     if (global.Sync) Sync.start(function () { try { route(); } catch (e) { } });
     /* 语言切换后重渲染（数字 / 日期格式随语言变化），并立即翻译全页 */
     if (global.I18n) {
