@@ -29,9 +29,11 @@ function mysqlPool() {
   if (pool) return pool;
   const mysql = require('mysql2/promise');
   function buildSsl() {
+    // Aiven 强制 TLS。默认开启加密但不校验 CA（免费层无需下载证书即可连）。
+    // 若提供了 DB_CA 则启用严格校验；DB_SSL=false 会关闭 TLS，Aiven 上会连不上。
     if (process.env.DB_SSL === 'false') return false;
-    return process.env.DB_CA
-      ? { rejectUnauthorized: true, ca: process.env.DB_CA }
+    return process.env.DB_CA && String(process.env.DB_CA).trim()
+      ? { rejectUnauthorized: true, ca: String(process.env.DB_CA).replace(/\\n/g, '\n') }
       : { rejectUnauthorized: false };
   }
   pool = mysql.createPool({
@@ -41,11 +43,37 @@ function mysqlPool() {
     password: process.env.DB_PASS,
     database: process.env.DB_NAME,
     ssl: buildSsl(),
+    timezone: 'Z', // 与写入端 FROM_UNIXTIME 的 UTC 语义对齐，避免 last-write-wins 时间戳错位
     waitForConnections: true,
     connectionLimit: 5,
     connectTimeout: 15000
   });
   return pool;
+}
+
+/* 首次访问时自动建表（幂等）——免去手动执行 schema.sql。
+   Aiven 免费层服务闲置会自动断电，故失败时清空缓存以便下次重连后重试。 */
+let schemaReady = null;
+function ensureSchema() {
+  if (!USE_MYSQL) return Promise.resolve();
+  if (!schemaReady) {
+    schemaReady = (async function () {
+      const p = mysqlPool();
+      await p.query(
+        `CREATE TABLE IF NOT EXISTS scm_state (
+           id VARCHAR(32) NOT NULL,
+           data JSON NULL,
+           updated_at TIMESTAMP NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+           PRIMARY KEY (id)
+         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`
+      );
+      await p.query("INSERT IGNORE INTO scm_state (id, data) VALUES ('main', NULL)");
+    })().catch(function (e) {
+      schemaReady = null; // 允许断电恢复后重试
+      throw e;
+    });
+  }
+  return schemaReady;
 }
 
 /* ============================================================
@@ -73,6 +101,7 @@ async function fileWrite(obj) {
 /* ---------- 统一读写接口 ---------- */
 async function readState() {
   if (USE_MYSQL) {
+    await ensureSchema();
     const p = mysqlPool();
     const [rows] = await p.query('SELECT data, updated_at FROM scm_state WHERE id = ?', ['main']);
     if (!rows.length || rows[0].data == null) return { data: null, updatedAt: 0 };
@@ -88,6 +117,7 @@ async function readState() {
 
 async function writeState(data, updatedAt) {
   if (USE_MYSQL) {
+    await ensureSchema();
     const p = mysqlPool();
     await p.query(
       `INSERT INTO scm_state (id, data, updated_at)
@@ -104,8 +134,11 @@ async function writeState(data, updatedAt) {
 /* ---------- 健康检查 ---------- */
 app.get('/api/health', async function (req, res) {
   if (USE_MYSQL) {
-    try { await mysqlPool().query('SELECT 1'); res.json({ ok: true, ts: Date.now() }); }
-    catch (e) { res.status(500).json({ ok: false, error: String(e && e.message) }); }
+    try {
+      await ensureSchema();
+      await mysqlPool().query('SELECT 1');
+      res.json({ ok: true, backend: 'mysql', db: 'ok', ts: Date.now() });
+    } catch (e) { res.status(500).json({ ok: false, backend: 'mysql', error: String(e && e.message) }); }
     return;
   }
   res.json({ ok: true, backend: 'file', ts: Date.now() });
@@ -139,6 +172,7 @@ app.put('/api/state', async function (req, res) {
 app.delete('/api/state', async function (req, res) {
   try {
     if (USE_MYSQL) {
+      await ensureSchema();
       await mysqlPool().query('UPDATE scm_state SET data = NULL, updated_at = NULL WHERE id = ?', ['main']);
     } else {
       await fileWrite({ data: null, updatedAt: 0 });
