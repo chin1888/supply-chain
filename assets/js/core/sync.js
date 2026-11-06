@@ -14,8 +14,17 @@
     'sales', 'shipments', 'invoices', 'users', 'monthly', 'regionData', 'categoryData'];
 
   function cfg() { return global.SCM_CONFIG || {}; }
-  function isEnabled() { return !!(cfg().apiBase && String(cfg().apiBase).trim()); }
-  function baseUrl() { return String(cfg().apiBase || '').replace(/\/+$/, ''); }
+  function isEnabled() {
+    // file:// 直接打开 → 纯离线（localStorage），不发任何网络请求
+    var proto = (global.location && global.location.protocol) || '';
+    if (proto === 'file:') return false;
+    return true; // http(s)：尝试同源相对路径（apiBase 留空）或指定跨域地址
+  }
+  function baseUrl() {
+    var b = String(cfg().apiBase || '').trim();
+    if (!b) return ''; // 同源相对路径（前端与后端同一服务）
+    return b.replace(/\/+$/, '');
+  }
   function pollMs() { return Number(cfg().pollMs) || 8000; }
 
   function readMeta() {

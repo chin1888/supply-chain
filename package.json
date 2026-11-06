@@ -1,0 +1,14 @@
+{
+  "name": "scm-supply-chain",
+  "version": "1.0.0",
+  "private": true,
+  "description": "供应链系统（前端 + 云端同步后端，单端口部署）",
+  "scripts": {
+    "start": "node server/server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "mysql2": "^3.11.0"
+  }
+}

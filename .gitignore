@@ -1,6 +1,10 @@
 # 依赖
 server/node_modules/
 
+# 运行时生成的云端状态文件（由后端写入，勿入库）
+server/scm-state.json
+server/scm-state.json.tmp
+
 # 项目本地数据（workbuddy 工作区数据，不入库）
 .workbuddy/
 

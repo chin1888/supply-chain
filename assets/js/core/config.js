@@ -4,8 +4,11 @@
    留空则自动降级为纯 localStorage（单机 / 离线模式，行为与改造前一致）。
    ============================================================ */
 window.SCM_CONFIG = {
-  // Render 部署后自动分配的域名（service 名 CFKSCS）
-  apiBase: 'https://cfkscs.onrender.com',
+  // 留空 = 同源相对路径（前端与后端由同一服务托管，如 WorkBuddy 云端托管）。
+  // 若后端单独部署在别的域名（如 Render + Aiven 独立部署），在此填后端地址，例如：
+  //   'https://cfkscs.onrender.com'
+  // 不填且以 file:// 直接打开页面时，会自动降级为纯 localStorage（单机/离线）。
+  apiBase: '',
 
   // 轮询间隔（毫秒）。多浏览器通过轮询感知彼此的改动，实现近实时同步。
   pollMs: 8000
