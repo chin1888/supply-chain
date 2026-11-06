@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>视觉验证 · 供应商表单</title>
+<link rel="stylesheet" href="../assets/css/base.css">
+<link rel="stylesheet" href="../assets/css/admin.css">
+</head>
+<body>
+<div class="a-shell">
+  <aside class="a-side">
+    <div class="brand"><span class="mark" data-i18n-skip data-i18n-glyph="mark">链</span><span>智联供应链</span></div>
+    <nav class="nav" id="aNav"></nav>
+    <div class="foot">SCM v1.0.0 · 演示环境</div>
+  </aside>
+  <div class="a-main">
+    <header class="a-top">
+      <div><div class="ttl" id="aTitle">供应商管理</div><div class="crumb" id="aCrumb">首页 / 供应商管理</div></div>
+      <div class="right"><span class="badge gray" id="aRoleBadge">超级管理员</span>
+        <div class="a-user" id="aUser"><div class="row gap8"><div class="a-avatar" id="aAvatar" data-i18n-skip data-i18n-glyph="avatar">管</div>
+          <div class="col" style="line-height:1.2"><div class="t-sm bold" id="aUserName">管理员</div><div class="t-xs muted" id="aUserDept">运营部</div></div>
+        </div></div>
+      </div>
+    </header>
+    <main class="a-content" id="aApp"></main>
+  </div>
+</div>
+<script src="../assets/js/core/utils.js"></script>
+<script src="../assets/js/core/i18n-data.js"></script>
+<script src="../assets/js/core/i18n-dict.js"></script>
+<script src="../assets/js/core/i18n-products.js"></script>
+<script src="../assets/js/core/i18n.js"></script>
+<script src="../assets/js/core/seed.js"></script>
+<script src="../assets/js/core/store.js"></script>
+<script src="../assets/js/core/product-schema.js"></script>
+<script src="../assets/js/core/analytics.js"></script>
+<script src="../assets/js/core/fx.js"></script>
+<script src="../assets/js/core/charts.js"></script>
+<script src="../assets/js/admin/pages-core.js"></script>
+<script src="../assets/js/admin/pages-products.js"></script>
+<script src="../assets/js/admin/po-editor.js"></script>
+<script src="../assets/js/admin/pages-ops.js"></script>
+<script src="../assets/js/admin/pages-biz.js"></script>
+<script src="../assets/js/admin/app.js"></script>
+<script>
+  setTimeout(function () {
+    location.hash = '#/suppliers';
+    setTimeout(function () {
+      var btn = Array.prototype.slice.call(document.querySelectorAll('#aApp button'))
+        .filter(function (b) { return /新增|Add|Neu|anlegen/i.test(b.textContent); })[0];
+      if (btn) btn.click();
+      setTimeout(function () {
+        var p = document.querySelector('[data-f="province"]');
+        if (p) {
+          p.value = '广东省';
+          p.dispatchEvent(new Event('change', { bubbles: true }));
+          var c = document.querySelector('[data-f="city"]');
+          if (c) { c.value = '深圳'; c.dispatchEvent(new Event('change', { bubbles: true })); }
+          var cat = document.querySelector('[data-f="category"]');
+          if (cat) U.setVal(cat, (window.I18n && I18n.get() !== 'zh')
+            ? 'High-Precision Ceramic Substrates / Semiconductor Packaging Materials'
+            : '高精密陶瓷基板 / 半导体封装材料');
+        }
+      }, 400);
+    }, 700);
+  }, 400);
+</script>
+</body>
+</html>

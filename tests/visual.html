@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>视觉验证 · 采购明细</title>
+<link rel="stylesheet" href="../assets/css/base.css">
+<link rel="stylesheet" href="../assets/css/admin.css">
+<style>
+  /* 截图验证用：关闭弹窗入场动画，避免无头浏览器截到过渡中间态 */
+  html.no-anim .modal-mask, html.no-anim .modal { animation: none !important; }
+</style>
+</head>
+<body>
+
+<div class="a-shell">
+  <aside class="a-side">
+    <div class="brand"><span class="mark" data-i18n-skip data-i18n-glyph="mark">链</span><span>智联供应链</span></div>
+    <nav class="nav" id="aNav"></nav>
+    <div class="foot">SCM v1.0.0 · 演示环境</div>
+  </aside>
+  <div class="a-main">
+    <header class="a-top">
+      <div>
+        <div class="ttl" id="aTitle">采购管理</div>
+        <div class="crumb" id="aCrumb">首页 / 采购管理</div>
+      </div>
+      <div class="right">
+        <span class="badge gray" id="aRoleBadge">超级管理员</span>
+        <div class="a-user" id="aUser">
+          <div class="row gap8">
+            <div class="a-avatar" id="aAvatar" data-i18n-skip data-i18n-glyph="avatar">管</div>
+            <div class="col" style="line-height:1.2">
+              <div class="t-sm bold" id="aUserName">管理员</div>
+              <div class="t-xs muted" id="aUserDept">运营部</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+    <main class="a-content" id="aApp"></main>
+  </div>
+</div>
+
+<script src="../assets/js/core/utils.js"></script>
+<script src="../assets/js/core/i18n-data.js"></script>
+<script src="../assets/js/core/i18n-dict.js"></script>
+<script src="../assets/js/core/i18n-products.js"></script>
+<script src="../assets/js/core/i18n.js"></script>
+<script src="../assets/js/core/seed.js"></script>
+<script src="../assets/js/core/store.js"></script>
+<script src="../assets/js/core/product-schema.js"></script>
+<script src="../assets/js/core/analytics.js"></script>
+<script src="../assets/js/core/fx.js"></script>
+<script src="../assets/js/core/charts.js"></script>
+<script src="../assets/js/admin/pages-core.js"></script>
+<script src="../assets/js/admin/pages-products.js"></script>
+<script src="../assets/js/admin/po-editor.js"></script>
+<script src="../assets/js/admin/pages-ops.js"></script>
+<script src="../assets/js/admin/pages-biz.js"></script>
+<script src="../assets/js/admin/app.js"></script>
+<script>
+  setTimeout(function () {
+    document.documentElement.classList.add('no-anim');
+    location.hash = '#/purchases';
+    setTimeout(function () {
+      var isDetail = /[?&]detail=1/.test(location.search);
+      var buttons = Array.prototype.slice.call(document.querySelectorAll('#aApp button'));
+      var btn = isDetail
+        ? buttons.filter(function (b) { return /明细|Detail|Details/i.test(b.textContent); })[0]
+        : buttons.filter(function (b) { return /新增|Add|Neu|anlegen/i.test(b.textContent); })[0];
+      if (btn) btn.click();
+      if (isDetail) return;
+      setTimeout(function () {
+        var rows = document.querySelectorAll('[data-row]');
+        if (rows.length) {
+          var name = rows[0].querySelector('[data-n]');
+          var en = window.I18n && I18n.get() !== 'zh';
+          U.setVal(name, en ? 'Chip Resistor 0402 High-Precision Anti-Sulfur Automotive Grade (M-ELEC-1007)'
+            : '贴片电阻 0402 高精度抗硫化车规级（M-电子-1007）');
+          name.dispatchEvent(new Event('input', { bubbles: true }));
+          if (rows[1]) U.setVal(rows[1].querySelector('[data-n]'),
+            en ? 'MXene Flexible Conductive Film 500mm x 1m' : 'MXene 柔性导电薄膜 500mm×1m');
+        }
+      }, 400);
+    }, 700);
+  }, 400);
+</script>
+</body>
+</html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>供应链管理系统 · 管理后台</title>
+<link rel="stylesheet" href="assets/css/base.css">
+<link rel="stylesheet" href="assets/css/admin.css">
+</head>
+<body>
+
+<div class="a-shell">
+  <aside class="a-side">
+    <div class="brand"><span class="mark" data-i18n-skip data-i18n-glyph="mark">链</span><span>智联供应链</span></div>
+    <nav class="nav" id="aNav"></nav>
+    <div class="foot">SCM v1.0.0 · 演示环境</div>
+  </aside>
+
+  <div class="a-main">
+    <header class="a-top">
+      <div>
+        <div class="ttl" id="aTitle">总览看板</div>
+        <div class="crumb" id="aCrumb">首页 / 总览看板</div>
+      </div>
+      <div class="right">
+        <span class="badge gray" id="aRoleBadge">超级管理员</span>
+        <a class="btn sm" href="index.html" target="_blank">查看前台</a>
+        <div class="a-user" id="aUser">
+          <div class="row gap8">
+            <div class="a-avatar" id="aAvatar" data-i18n-skip data-i18n-glyph="avatar">管</div>
+            <div class="col" style="line-height:1.2">
+              <div class="t-sm bold" id="aUserName">管理员</div>
+              <div class="t-xs muted" id="aUserDept">运营部</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+    <main class="a-content" id="aApp"></main>
+  </div>
+</div>
+
+<script src="assets/js/core/utils.js"></script>
+<script src="assets/js/core/i18n-data.js"></script>
+<script src="assets/js/core/i18n-dict.js"></script>
+<script src="assets/js/core/i18n-products.js"></script>
+<script src="assets/js/core/i18n.js"></script>
+<script src="assets/js/core/seed.js"></script>
+<script src="assets/js/core/config.js"></script>
+<script src="assets/js/core/sync.js"></script>
+<script src="assets/js/core/store.js"></script>
+<script src="assets/js/core/product-schema.js"></script>
+<script src="assets/js/core/analytics.js"></script>
+<script src="assets/js/core/fx.js"></script>
+<script src="assets/js/core/charts.js"></script>
+<script src="assets/js/admin/pages-core.js"></script>
+<script src="assets/js/admin/pages-warehouse.js"></script>
+<script src="assets/js/admin/pages-products.js"></script>
+<script src="assets/js/admin/po-editor.js"></script>
+<script src="assets/js/admin/pages-ops.js"></script>
+<script src="assets/js/admin/pages-biz.js"></script>
+<script src="assets/js/admin/app.js"></script>
+</body>
+</html>

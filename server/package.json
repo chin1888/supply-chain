@@ -1,0 +1,14 @@
+{
+  "name": "scm-sync-server",
+  "version": "1.0.0",
+  "private": true,
+  "description": "SCM 供应链系统 · 云端同步后端（Express + Aiven MySQL）",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "mysql2": "^3.11.0"
+  }
+}
