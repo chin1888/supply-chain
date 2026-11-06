@@ -1346,5 +1346,14 @@ window.I18N_DICT = {
   '已按需求完成采购明细填报': ['e.g. completed purchase line entry per requirements', 'z. B. Beschaffungspositionen wie gefordert ausgefüllt'],
   '通过后即转为正式采购订单。': ['Upon approval it becomes a formal purchase order.', 'Nach Genehmigung wird es zu einem formalen Bestellauftrag.'],
   '驳回后将退回业务操作员重新处理，请填写驳回原因。': ['After rejection it returns to the business operator for reprocessing. Please enter the rejection reason.', 'Nach der Ablehnung geht es zur erneuten Bearbeitung an den Sachbearbeiter. Bitte den Ablehnungsgrund eingeben.'],
-  '超级管理员建单 → 指派经理 → 经理指派操作员 → 操作员提交 → 经理审核通过转正式订单': ['Super admin creates order → assigns manager → manager assigns operator → operator submits → manager approves into formal order', 'Superadmin erstellt Auftrag → weist Manager zu → Manager weist Sachbearbeiter zu → Sachbearbeiter reicht ein → Manager genehmigt als formalen Auftrag']
+  '超级管理员建单 → 指派经理 → 经理指派操作员 → 操作员提交 → 经理审核通过转正式订单': ['Super admin creates order → assigns manager → manager assigns operator → operator submits → manager approves into formal order', 'Superadmin erstellt Auftrag → weist Manager zu → Manager weist Sachbearbeiter zu → Sachbearbeiter reicht ein → Manager genehmigt als formalen Auftrag'],
+
+  // 数据备份（导出/导入）
+  '导出数据': ['Export Data', 'Daten exportieren'],
+  '导入数据': ['Import Data', 'Daten importieren'],
+  '导入将覆盖当前本地数据并同步到云端，确定继续？': ['Importing will overwrite local data and sync to cloud. Continue?', 'Der Import überschreibt lokale Daten und synchronisiert in die Cloud. Fortfahren?'],
+  '已导出数据备份': ['Data backup exported', 'Datensicherung exportiert'],
+  '导入成功，正在同步到云端…': ['Import succeeded, syncing to cloud…', 'Import erfolgreich, Synchronisierung in die Cloud…'],
+  '导入失败：': ['Import failed: ', 'Import fehlgeschlagen: '],
+  '导出失败：': ['Export failed: ', 'Export fehlgeschlagen: ']
 };

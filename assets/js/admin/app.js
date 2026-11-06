@@ -104,6 +104,68 @@
 
   Admin.reload = function () { renderNav((location.hash.replace('#/', '') || 'dashboard')); route(); };
 
+  /* ---------- 数据备份：导出 / 导入 JSON ----------
+     用途：跨 origin（本地 file://、WorkBuddy 云、Render+Aiven）迁移数据时，
+     先把旧环境的数据导出，再到新环境导入并同步到云端。 */
+  function exportData() {
+    try {
+      var data = JSON.stringify(Store.db, null, 2);
+      var blob = new Blob([data], { type: 'application/json' });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      var d = new Date();
+      var pad = function (n) { return (n < 10 ? '0' : '') + n; };
+      a.href = url;
+      a.download = 'scm-backup-' + d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate()) +
+        '-' + pad(d.getHours()) + pad(d.getMinutes()) + '.json';
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+      if (U.toast) U.toast('已导出数据备份', 'ok');
+    } catch (e) {
+      if (U.toast) U.toast('导出失败：' + e.message, 'err');
+    }
+  }
+
+  var IMPORT_KEYS = ['suppliers', 'products', 'warehouses', 'inventory', 'purchases',
+    'sales', 'shipments', 'invoices', 'users', 'monthly', 'regionData', 'categoryData'];
+
+  function importData() {
+    var input = U.$('#aImportFile');
+    if (!input) return;
+    input.value = '';
+    input.onchange = function () {
+      var f = input.files && input.files[0];
+      if (!f) return;
+      var reader = new FileReader();
+      reader.onload = function () {
+        try {
+          var parsed = JSON.parse(String(reader.result));
+          if (!parsed || typeof parsed !== 'object') throw new Error('文件格式不正确');
+          var ok = IMPORT_KEYS.some(function (k) { return Array.isArray(parsed[k]); });
+          if (!ok) throw new Error('不是有效的供应链数据备份');
+          U.confirm('导入将覆盖当前本地数据并同步到云端，确定继续？', function () {
+            Store.db = parsed;
+            IMPORT_KEYS.forEach(function (k) { if (!Store.db[k]) Store.db[k] = []; });
+            if (!Store.db.meta || typeof Store.db.meta !== 'object') Store.db.meta = {};
+            Store.save();
+            // 标记本机更新，使 Sync 在下次对齐时把数据上传到云端（Aiven）
+            try {
+              var m = JSON.parse(localStorage.getItem('scm_sync_meta_v1') || '{}');
+              m.localUpdated = Date.now();
+              localStorage.setItem('scm_sync_meta_v1', JSON.stringify(m));
+            } catch (e) { }
+            if (U.toast) U.toast('导入成功，正在同步到云端…', 'ok');
+            setTimeout(function () { location.reload(); }, 700);
+          });
+        } catch (e) {
+          if (U.toast) U.toast('导入失败：' + e.message, 'err');
+        }
+      };
+      reader.readAsText(f);
+    };
+    input.click();
+  }
+
   function boot() {
     Store.init();
     if (window.FX) FX.init();
@@ -112,6 +174,10 @@
       if (ex) { ex.remove(); return; }
       userMenu();
     });
+    var exBtn = U.$('#aExport');
+    if (exBtn) exBtn.addEventListener('click', exportData);
+    var imBtn = U.$('#aImport');
+    if (imBtn) imBtn.addEventListener('click', importData);
     window.addEventListener('hashchange', route);
     route();
     /* 云端同步（方案 B）：启动后与 Aiven MySQL 拉取/对齐，并开启轮询 */
