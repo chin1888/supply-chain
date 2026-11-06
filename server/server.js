@@ -135,6 +135,20 @@ app.put('/api/state', async function (req, res) {
   }
 });
 
+/* ---------- 重置云端数据块（清空为「空」，用于首次启用前清理 / 重新初始化） ---------- */
+app.delete('/api/state', async function (req, res) {
+  try {
+    if (USE_MYSQL) {
+      await mysqlPool().query('UPDATE scm_state SET data = NULL, updated_at = NULL WHERE id = ?', ['main']);
+    } else {
+      await fileWrite({ data: null, updatedAt: 0 });
+    }
+    res.json({ ok: true });
+  } catch (e) {
+    res.status(500).json({ error: String(e && e.message) });
+  }
+});
+
 /* ---------- 托管前端静态文件（项目根目录） ---------- */
 app.use(express.static(path.join(__dirname, '..')));
 

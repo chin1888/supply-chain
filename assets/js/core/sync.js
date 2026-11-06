@@ -38,7 +38,12 @@
     _timer: null,
 
     enabled: isEnabled,
-    apiUrl: function () { return baseUrl() + '/api/state'; },
+    apiUrl: function () {
+      var u = baseUrl() + '/api/state';
+      // 同源部署时携带分享链接的 sharecode，避免被网关按「链接不完整」拦截
+      if (!baseUrl() && global.location && global.location.search) u += global.location.search;
+      return u;
+    },
 
     /* 上传本机数据块 */
     push: function (db) {
